@@ -14,7 +14,6 @@ public interface PriorityQueueInterface<T extends Comparable> {
 
     /**
      * Extract the current maximum element from the Queue (assuming a max heap).
-     *
      * @return
      */
     T extractMax();

@@ -61,7 +61,15 @@ public class TrieDriverCode {
                     case "DELETE":
                         search_term = br.readLine();
                         System.out.println("Deleting: "+search_term );
-                        trie.delete(search_term);
+                   
+                        boolean res = trie.delete(search_term);
+                     
+                        if (!res) {
+                            System.out.println("ERROR DELETING");
+                        } else {
+                        	
+                            System.out.println("DELETED");
+                        }
                         break;
                     case "PRINTLEVEL":
                         trie.printLevel(Integer.parseInt(cmd[1]));
@@ -74,6 +82,9 @@ public class TrieDriverCode {
                 }
             } catch (IOException e) {
                 System.err.println("File Not Found");
+            } catch (NullPointerException ne) {
+                ne.printStackTrace();
+                break;
             }
         }
     }

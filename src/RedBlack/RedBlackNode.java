@@ -5,19 +5,23 @@ import java.util.List;
 
 public class RedBlackNode<T extends Comparable, E> implements RBNodeInterface<E> {
 	
-	String color;
-	RedBlackNode<T,E> left;
-	RedBlackNode<T,E> right;
-	RedBlackNode<T,E> parent;
-	E value;
-	T key;
-	List<E> values;
+	private String color;
+	private RedBlackNode<T,E> left;
+	private RedBlackNode<T,E> right;
+	private RedBlackNode<T,E> parent;
+	private E value;
+	private T key;
+	private List<E> values;
+	
 	RedBlackNode(String s,E v,T k){
+		
 		color = s;
 		value = v;
 		key = k;
+		if(!color.equals("EXT")) {
 		values = new ArrayList<E>();
 		values.add(value);
+		}
 
 	}
 	

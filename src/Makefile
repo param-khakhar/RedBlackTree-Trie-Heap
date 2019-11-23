@@ -1,7 +1,14 @@
-logtrieerror= (echo 'ERROR '; echo 'EXPECTED_OUTPUT:'; echo "--------------"; cat Trie/EXPECTED_OUTPUT; echo "==============" ;echo "Your OUTPUT"; echo "--------------"; cat Trie/tmp;)
-logrberror = (echo "ERROR"; echo "EXPECTED_OUTPUT:"; echo "--------------"; cat RedBlack/EXPECTED_OUTPUT; echo "==============" ;echo "Your OUTPUT:"; echo "--------------"; cat RedBlack/tmp;)
-logpqerror = (echo 'ERROR '; echo 'EXPECTED_OUTPUT:'; echo "--------------"; cat PriorityQueue/EXPECTED_OUTPUT; echo "=============="; echo "Your OUTPUT:"; echo "--------------"; cat PriorityQueue/tmp; )
-logpmerror = (echo 'ERROR '; echo 'EXPECTED_OUTPUT:'; echo "--------------"; cat ProjectManagement/EXPECTED_OUTPUT; echo "=============="; echo "Your OUTPUT:"; echo "--------------"; cat ProjectManagement/tmp; )
+JAVAC ?= javac
+JAVA ?= java
+INPUT_FILE ?= INP
+EXPECTED_OUTPUT_FILE ?= EXPECTED_OUTPUT
+SCORE_FILE ?= score
+score=2
+
+logtrieerror= (echo 'ERROR '; echo 'EXPECTED_OUTPUT:'; echo "--------------"; cat Trie/$(EXPECTED_OUTPUT_FILE); echo "==============" ;echo "Your OUTPUT"; echo "--------------"; cat Trie/tmp;)
+logrberror = (echo "ERROR"; echo "EXPECTED_OUTPUT:"; echo "--------------"; cat RedBlack/$(EXPECTED_OUTPUT_FILE); echo "==============" ;echo "Your OUTPUT:"; echo "--------------"; cat RedBlack/tmp;)
+logpqerror = (echo 'ERROR '; echo 'EXPECTED_OUTPUT:'; echo "--------------"; cat PriorityQueue/$(EXPECTED_OUTPUT_FILE); echo "=============="; echo "Your OUTPUT:"; echo "--------------"; cat PriorityQueue/tmp; )
+logpmerror = (echo 'ERROR '; echo 'EXPECTED_OUTPUT:'; echo "--------------"; cat ProjectManagement/$(EXPECTED_OUTPUT_FILE); echo "=============="; echo "Your OUTPUT:"; echo "--------------"; cat ProjectManagement/tmp; )
 
 all: triebuild triecheck rbtreebuild rbtreecheck pqbuild  pqcheck pmbuild pmcheck clean
 testcase: pqtestcase rbtestcase trietestcase pmtestcase
@@ -12,17 +19,19 @@ rbtree: rbtreebuild rbtreecheck rbtreeclean
 pq: pqbuild pqcheck pqclean
 pm: pmbuild pmcheck pmclean
 
+
 triebuild:
 	@echo "**********"
 	@echo "Building Trie"
 	@echo "**********"
-	@javac Trie/*.java
-triecheck:
+	@$(JAVAC) -encoding ISO-8859-1 Trie/*.java
+triecheck: triebuild
 	@echo "**********"
 	@echo "Checking Trie"
 	@echo "**********"
-	@java Trie.TrieDriverCode >Trie/tmp
-	@cmp --silent Trie/tmp Trie/EXPECTED_OUTPUT && echo 'SUCCESS' || $(call logtrieerror)
+	@$(JAVA) Trie.TrieDriverCode Trie/$(INPUT_FILE) >Trie/tmp
+	@cd Trie &&	sed -i 's/[^[:print:]]//g' tmp &&	sed -i 's/[^[:print:]]//g' $(EXPECTED_OUTPUT_FILE)
+	@diff -i Trie/tmp Trie/$(EXPECTED_OUTPUT_FILE) && echo 'TRIE SUCCESS'  || $(call logtrieerror)
 trieclean:
 	-@rm Trie/tmp -f
 	-@rm Trie/*.class -f
@@ -31,13 +40,14 @@ rbtreebuild:
 	@echo "\n**********"
 	@echo "Building Red-Black Tree"
 	@echo "**********"
-	@javac RedBlack/*.java
-rbtreecheck:
+	@$(JAVAC) -encoding ISO-8859-1 RedBlack/*.java
+rbtreecheck: rbtreebuild
 	@echo "\n**********"
 	@echo "Checking Red-Black"
 	@echo "**********"
-	@java RedBlack.RedBlackDriverCode >RedBlack/tmp
-	@cmp --silent RedBlack/tmp RedBlack/EXPECTED_OUTPUT && echo 'SUCCESS' || $(call logrberror)
+	@$(JAVA) RedBlack.RedBlackDriverCode RedBlack/$(INPUT_FILE) >RedBlack/tmp
+	@cd RedBlack && sed -i 's/[^[:print:]]//g' tmp && sed -i 's/[^[:print:]]//g' $(EXPECTED_OUTPUT_FILE)
+	@diff -i RedBlack/tmp RedBlack/$(EXPECTED_OUTPUT_FILE) && echo 'RBTREE SUCCESS' || $(call logrberror)
 rbtreeclean:
 	-@rm RedBlack/tmp -f 
 	-@rm RedBlack/*.class -f
@@ -46,13 +56,14 @@ pqbuild:
 	@echo "\n**********"
 	@echo "Building PriorityQueue"
 	@echo "**********"
-	@javac PriorityQueue/*.java
-pqcheck:
+	@$(JAVAC) -encoding ISO-8859-1 PriorityQueue/*.java
+pqcheck: pqbuild
 	@echo "\n**********"
 	@echo "Checking PriorityQueue"
 	@echo "**********"
-	@java PriorityQueue.PriorityQueueDriverCode >PriorityQueue/tmp
-	@cmp --silent PriorityQueue/tmp PriorityQueue/EXPECTED_OUTPUT && echo 'SUCCESS' || $(call logpqerror)
+	@$(JAVA) PriorityQueue.PriorityQueueDriverCode PriorityQueue/$(INPUT_FILE) >PriorityQueue/tmp
+	@cd PriorityQueue  && sed -i 's/[^[:print:]]//g' tmp && sed -i 's/[^[:print:]]//g' $(EXPECTED_OUTPUT_FILE)
+	@diff -i PriorityQueue/tmp PriorityQueue/$(EXPECTED_OUTPUT_FILE) && echo 'PQ SUCCESS' || $(call logpqerror)
 pqclean:
 	-@rm PriorityQueue/tmp -f
 	-@rm PriorityQueue/*.class -f
@@ -61,13 +72,14 @@ pmbuild:
 	@echo "\n**********"
 	@echo "Building ProjectManagement"
 	@echo "**********"
-	@javac ProjectManagement/*.java
-pmcheck:
+	@$(JAVAC) -encoding ISO-8859-1 ProjectManagement/*.java
+pmcheck: pmbuild
 	@echo "\n**********"
 	@echo "Checking ProjectManagement"
 	@echo "**********"
-	@java ProjectManagement.Scheduler_Driver >ProjectManagement/tmp
-	@cmp --silent ProjectManagement/tmp ProjectManagement/EXPECTED_OUTPUT && echo 'SUCCESS' || $(call logpmerror)
+	@$(JAVA) ProjectManagement.Scheduler_Driver ProjectManagement/$(INPUT_FILE) >ProjectManagement/tmp
+	@cd ProjectManagement && sed -i 's/[^[:print:]]//g' tmp && sed -i 's/[^[:print:]]//g' $(EXPECTED_OUTPUT_FILE)
+	@diff -i ProjectManagement/tmp ProjectManagement/$(EXPECTED_OUTPUT_FILE) && echo 'PM SUCCESS' || $(call logpmerror)
 pmclean:
 	-@rm ProjectManagement/tmp -f
 	-@rm ProjectManagement/*.class -f
@@ -79,17 +91,17 @@ clean: trieclean pqclean rbtreeclean pmclean
 
 trietestcase:
 	@make triebuild
-	@java Trie.TrieDriverCode >Trie/EXPECTED_OUTPUT
+	@$(JAVA) Trie.TrieDriverCode Trie/$(INPUT_FILE) >Trie/$(EXPECTED_OUTPUT_FILE)
 	@make clean
 pqtestcase:
 	@make pqbuild
-	@java PriorityQueue.PriorityQueueDriverCode >PriorityQueue/EXPECTED_OUTPUT
+	@$(JAVA) PriorityQueue.PriorityQueueDriverCode PriorityQueue/$(INPUT_FILE) >PriorityQueue/$(EXPECTED_OUTPUT_FILE)
 	@make clean
 rbtestcase:
 	@make rbtreebuild
-	@java RedBlack.RedBlackDriverCode >RedBlack/EXPECTED_OUTPUT
+	@$(JAVA) RedBlack.RedBlackDriverCode RedBlack/$(INPUT_FILE) >RedBlack/$(EXPECTED_OUTPUT_FILE)
 	@make clean
 pmtestcase:
 	@make pmbuild
-	@java ProjectManagement.Scheduler_Driver >ProjectManagement/EXPECTED_OUTPUT
+	@$(JAVA) ProjectManagement.Scheduler_Driver ProjectManagement/$(INPUT_FILE) >ProjectManagement/$(EXPECTED_OUTPUT_FILE)
 	@make clean

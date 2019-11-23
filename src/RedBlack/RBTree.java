@@ -4,14 +4,14 @@ package RedBlack;
 public class RBTree<T extends Comparable, E> implements RBTreeInterface<T, E>  {
 
 	RedBlackNode<T,E> root;
-	RBTree(){
+	public RBTree(){
 		root = null;
 	}
 	
 	
     @Override
     public void insert(T key, E value) {
-
+    	//System.out.println(value+" :Inserted");
     	RedBlackNode<T,E> curr = root;
     	RedBlackNode<T,E> ins = new RedBlackNode<T,E>("RED",value,key);
     	if(root == null) {
@@ -21,34 +21,59 @@ public class RBTree<T extends Comparable, E> implements RBTreeInterface<T, E>  {
     		root.setRight(new RedBlackNode<T,E>("EXT",null,null));
     	}
     	else {
+    		//System.out.println("The root is: "+curr.getValue());
+    		//System.out.println("The left child is: "+curr.getLeft().getValue());
+    		//System.out.println("The right child is :"+curr.getRight().getValue());
     		while(!(curr.getLeft().getColor().equals("EXT")&&(curr.getRight().getColor().equals("EXT")))&&(curr.compareTo(ins)!=0)) {
-    			if(curr.compareTo(ins)<0) {
+
+    			/**if(curr.getLeft().getColor().equals("EXT")) {
     				curr = curr.getRight();
     			}
-    			else {
+    			else if(curr.getRight().getColor().equals("EXT")) {
     				curr = curr.getLeft();
+    			}**/
+    			if(curr.compareTo(ins)<0) {
+    				if(!curr.getRight().getColor().equals("EXT")) {
+    				curr = curr.getRight();
+    				}
+    				else {
+    					break;
+    				}
+    			}
+    			else {
+    				if(!curr.getLeft().getColor().equals("EXT")) {
+    					curr = curr.getLeft();
+    				}
+    				else {
+    					break;
+    				}
     			}
     		}
+    		
     		if(curr.compareTo(ins)==0) {
     			//System.out.println("HERE");
     			curr.addValue(ins.getValue());
     		}
+    		
     		else {
-    		if(curr.compareTo(ins)<0) {
-    			curr.setRight(ins);
-    			ins.setLeft(new RedBlackNode<T,E>("EXT",null,null));
-    			ins.setRight(new RedBlackNode<T,E>("EXT",null,null));
-    			ins.setParent(curr);
+    			if(curr.compareTo(ins)<0) {
+    				curr.setRight(ins);
+    				ins.setLeft(new RedBlackNode<T,E>("EXT",null,null));
+    				ins.setRight(new RedBlackNode<T,E>("EXT",null,null));
+    				ins.setParent(curr);
+    				}
+    			
+    			else 
+    				{
+    				curr.setLeft(ins);
+    				ins.setLeft(new RedBlackNode<T,E>("EXT",null,null));
+    				ins.setRight(new RedBlackNode<T,E>("EXT",null,null));
+    				ins.setParent(curr);
     		}
-    		else {
-    			curr.setLeft(ins);
-    			ins.setLeft(new RedBlackNode<T,E>("EXT",null,null));
-    			ins.setRight(new RedBlackNode<T,E>("EXT",null,null));
-    			ins.setParent(curr);
-    		}
+    			
     		boolean restructure = false;
+    		
     		while(!(restructure)&&((curr!=root)&&(ins!=root))&&(ins.getColor().equals("RED")&&ins.getParent().getColor().equals("RED"))){
-    			//System.out.println("Enter the loop!");
     			curr = ins.getParent();
     			RedBlackNode<T,E> par = curr.getParent();
     			if(par.getLeft() == curr) {
@@ -140,9 +165,9 @@ public class RBTree<T extends Comparable, E> implements RBTreeInterface<T, E>  {
 			if(y.getRight() == z) {
 				temp = y.getLeft();
 				y.setParent(x.getParent());
+				y.setLeft(x);
 				if((x.getParent()!=null)&&(x.getParent().getLeft()==x)) {x.getParent().setLeft(y);}
 				else if(x.getParent()!=null) {x.getParent().setRight(y);}
-				y.setLeft(x);
 				x.setParent(y);
 				x.setRight(temp);
 				temp.setParent(x);
@@ -151,8 +176,8 @@ public class RBTree<T extends Comparable, E> implements RBTreeInterface<T, E>  {
 				temp = z.getRight();
 				z.setParent(x);
 				y.setParent(z);
-				z.setRight(y);
 				y.setLeft(temp);
+				z.setRight(y);
 				temp.setParent(y);
 				x.setRight(z);
 				temp = z.getLeft();
@@ -169,6 +194,7 @@ public class RBTree<T extends Comparable, E> implements RBTreeInterface<T, E>  {
 	
     @Override
     public RedBlackNode<T, E> search(T key) {
+    	if(root!=null) {
         RedBlackNode<T,E> curr = root;
         while((!curr.getColor().equals("EXT"))&&(curr.getKey().toString().compareTo(key.toString())!=0)) {
         	if(curr.getKey().toString().compareTo(key.toString())<0) {
@@ -179,11 +205,21 @@ public class RBTree<T extends Comparable, E> implements RBTreeInterface<T, E>  {
         	}
         }
         if(curr.getColor().equals("EXT")) {
-        	return null;
+        	//System.out.println("Not Found");
+        	return curr;
         }
         else {
         	return curr;
         }
+    	}
+    	else {
+    		return new RedBlackNode<T,E>("EXT",null,null);
+    	}
     }
+    
+    /**public void InOrder(RedBlackNode<T,E> curr) {
+    	RedBlackNode<T,E> curr = root;
+    	
+    }**/
 }
 
